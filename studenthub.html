@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .status-bar {
+            height: 24px;
+            background-color: #6200ee;
+            color: white;
+            padding: 0 16px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ff3d00;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .subject-card {
+            transition: transform 0.2s ease;
+        }
+        
+        .subject-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s;
+        }
+        
+        .floating-btn {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .drawer {
+            transition: transform 0.3s ease;
+        }
+        
+        .drawer.closed {
+            transform: translateX(-100%);
+        }
+        
+        .overlay {
+            transition: opacity 0.3s ease;
+        }
+        
+        .overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen">
+    <!-- Status Bar (simulated Android status bar) -->
+    <div class="status-bar flex items-center justify-between text-xs">
+        <div>9:41 AM</div>
+        <div class="flex space-x-2">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+    
+    <!-- App Bar -->
+    <div class="bg-purple-600 text-white px-4 py-3 flex items-center justify-between shadow-md">
+        <div class="flex items-center">
+            <button id="menu-btn" class="mr-4">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h1 class="text-xl font-medium">Student Hub</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button class="relative">
+                <i class="fas fa-bell text-xl"></i>
+                <div class="notification-badge">3</div>
+            </button>
+            <button>
+                <i class="fas fa-search text-xl"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto">
+        <!-- Welcome Banner -->
+        <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-8">
+            <h2 class="text-2xl font-bold mb-1">Hello, Alex!</h2>
+            <p class="opacity-90">You have 2 classes and 1 assignment today</p>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="px-4 py-3 grid grid-cols-4 gap-2">
+            <button class="bg-white rounded-lg p-3 flex flex-col items-center shadow-sm">
+                <div class="bg-blue-100 text-blue-600 rounded-full p-3 mb-2">
+                    <i class="fas fa-calendar-day text-lg"></i>
+                </div>
+                <span class="text-xs font-medium">Schedule</span>
+            </button>
+            <button class="bg-white rounded-lg p-3 flex flex-col items-center shadow-sm">
+                <div class="bg-green-100 text-green-600 rounded-full p-3 mb-2">
+                    <i class="fas fa-tasks text-lg"></i>
+                </div>
+                <span class="text-xs font-medium">Assignments</span>
+            </button>
+            <button class="bg-white rounded-lg p-3 flex flex-col items-center shadow-sm">
+                <div class="bg-yellow-100 text-yellow-600 rounded-full p-3 mb-2">
+                    <i class="fas fa-graduation-cap text-lg"></i>
+                </div>
+                <span class="text-xs font-medium">Grades</span>
+            </button>
+            <button class="bg-white rounded-lg p-3 flex flex-col items-center shadow-sm">
+                <div class="bg-red-100 text-red-600 rounded-full p-3 mb-2">
+                    <i class="fas fa-book text-lg"></i>
+                </div>
+                <span class="text-xs font-medium">Resources</span>
+            </button>
+        </div>
+        
+        <!-- Today's Classes -->
+        <div class="px-4 py-3">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-medium text-gray-700">Today's Classes</h3>
+                <button class="text-purple-600 text-sm font-medium">View All</button>
+            </div>
+            
+            <div class="space-y-3">
+                <!-- Class Card 1 -->
+                <div class="subject-card bg-white rounded-xl p-4 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                    <div class="flex justify-between">
+                        <div>
+                            <h4 class="font-medium">Mathematics</h4>
+                            <p class="text-gray-500 text-sm">09:00 - 10:30 AM</p>
+                        </div>
+                        <div class="bg-blue-100 text-blue-600 rounded-full p-2">
+                            <i class="fas fa-square-root-alt"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-2">
+                            JD
+                        </div>
+                        <span class="text-sm">Prof. John Doe</span>
+                    </div>
+                </div>
+                
+                <!-- Class Card 2 -->
+                <div class="subject-card bg-white rounded-xl p-4 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+                    <div class="flex justify-between">
+                        <div>
+                            <h4 class="font-medium">Computer Science</h4>
+                            <p class="text-gray-500 text-sm">02:00 - 03:30 PM</p>
+                        </div>
+                        <div class="bg-green-100 text-green-600 rounded-full p-2">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs mr-2">
+                            AS
+                        </div>
+                        <span class="text-sm">Prof. Alice Smith</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upcoming Assignments -->
+        <div class="px-4 py-3">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-medium text-gray-700">Upcoming Assignments</h3>
+                <button class="text-purple-600 text-sm font-medium">View All</button>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex items-start">
+                    <div class="bg-purple-100 text-purple-600 rounded-full p-3 mr-3">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-medium">Data Structures Project</h4>
+                        <p class="text-gray-500 text-sm mb-2">Due: Tomorrow, 11:59 PM</p>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                            <div class="bg-purple-600 h-1.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>75% completed</span>
+                            <span>3/4 tasks</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Grades Overview -->
+        <div class="px-4 py-3">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-medium text-gray-700">Grades Overview</h3>
+                <button class="text-purple-600 text-sm font-medium">View All</button>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h4 class="font-medium">Current GPA</h4>
+                        <p class="text-gray-500 text-sm">Semester 1, 2023</p>
+                    </div>
+                    <div class="relative w-16 h-16">
+                        <svg class="w-full h-full" viewBox="0 0 36 36">
+                            <path
+                                d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="#e0e0e0"
+                                stroke-width="3"
+                            />
+                            <path
+                                d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke="#4caf50"
+                                stroke-width="3"
+                                stroke-dasharray="85, 100"
+                            />
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="font-bold text-gray-700">3.7</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs mr-2">
+                                M
+                            </div>
+                            <span class="text-sm">Mathematics</span>
+                        </div>
+                        <span class="font-medium text-green-600">A-</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs mr-2">
+                                CS
+                            </div>
+                            <span class="text-sm">Computer Science</span>
+                        </div>
+                        <span class="font-medium text-green-600">B+</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-yellow-500 text-white flex items-center justify-center text-xs mr-2">
+                                E
+                            </div>
+                            <span class="text-sm">English</span>
+                        </div>
+                        <span class="font-medium text-blue-600">A</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bg-white border-t border-gray-200 flex justify-around py-2">
+        <button class="flex flex-col items-center text-purple-600 p-2">
+            <i class="fas fa-home text-lg"></i>
+            <span class="text-xs mt-1">Home</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-500 p-2">
+            <i class="fas fa-calendar-alt text-lg"></i>
+            <span class="text-xs mt-1">Schedule</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-500 p-2">
+            <i class="fas fa-tasks text-lg"></i>
+            <span class="text-xs mt-1">Tasks</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-500 p-2">
+            <i class="fas fa-user text-lg"></i>
+            <span class="text-xs mt-1">Profile</span>
+        </button>
+    </div>
+    
+    <!-- Floating Action Button -->
+    <button class="floating-btn fixed bottom-20 right-6 bg-purple-600 text-white rounded-full w-14 h-14 flex items-center justify-center text-xl shadow-lg">
+        <i class="fas fa-plus"></i>
+    </button>
+    
+    <!-- Navigation Drawer -->
+    <div class="drawer fixed inset-y-0 left-0 w-64 bg-white shadow-xl z-50">
+        <div class="p-4 flex items-center border-b border-gray-200">
+            <div class="w-10 h-10 rounded-full bg-purple-500 text-white flex items-center justify-center text-lg font-medium mr-3">
+                A
+            </div>
+            <div>
+                <h3 class="font-medium">Alex Johnson</h3>
+                <p class="text-xs text-gray-500">Computer Science</p>
+            </div>
+        </div>
+        
+        <div class="p-2">
+            <button class="w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-purple-50 hover:text-purple-600">
+                <i class="fas fa-user-circle mr-3 text-lg"></i>
+                <span>Profile</span>
+            </button>
+            <button class="w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-purple-50 hover:text-purple-600">
+                <i class="fas fa-calendar-alt mr-3 text-lg"></i>
+                <span>Academic Calendar</span>
+            </button>
+            <button class="w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-purple-50 hover:text-purple-600">
+                <i class="fas fa-book mr-3 text-lg"></i>
+                <span>Course Materials</span>
+            </button>
+            <button class="w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-purple-50 hover:text-purple-600">
+                <i class="fas fa-chart-line mr-3 text-lg"></i>
+                <span>Performance</span>
+            </button>
+            <button class="w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-purple-50 hover:text-purple-600">
+                <i class="fas fa-cog mr-3 text-lg"></i>
+                <span>Settings</span>
+            </button>
+        </div>
+        
+        <div class="absolute bottom-0 w-full p-4 border-t border-gray-200">
+            <button class="w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-purple-50 hover:text-purple-600">
+                <i class="fas fa-sign-out-alt mr-3 text-lg"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Overlay -->
+    <div class="overlay fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    
+    <script>
+        // Toggle navigation drawer
+        const menuBtn = document.getElementById('menu-btn');
+        const drawer = document.querySelector('.drawer');
+        const overlay = document.querySelector('.overlay');
+        
+        menuBtn.addEventListener('click', () => {
+            drawer.classList.toggle('closed');
+            overlay.classList.toggle('hidden');
+        });
+        
+        overlay.addEventListener('click', () => {
+            drawer.classList.add('closed');
+            overlay.classList.add('hidden');
+        });
+        
+        // Simulate loading data
+        document.addEventListener('DOMContentLoaded', () => {
+            // Close drawer by default
+            drawer.classList.add('closed');
+            overlay.classList.add('hidden');
+            
+            // Add some animation to cards when page loads
+            const cards = document.querySelectorAll('.subject-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+        
+        // Progress ring animation
+        const progressRing = document.querySelector('.progress-ring-circle');
+        if (progressRing) {
+            const radius = progressRing.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            
+            progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+            progressRing.style.strokeDashoffset = circumference;
+            
+            const offset = circumference - (85 / 100) * circumference;
+            setTimeout(() => {
+                progressRing.style.strokeDashoffset = offset;
+            }, 500);
+        }
+    </script>
+</body>
+</html>
