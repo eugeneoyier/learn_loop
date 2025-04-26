@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyBuddy - Student Productivity App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .flashcard {
+            perspective: 1000px;
+        }
+        
+        .flashcard-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-front, .flashcard-back {
+            backface-visibility: hidden;
+        }
+        
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+        
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .task-item.completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c7d2fe;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a5b4fc;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="flex flex-col min-h-screen">
+        <!-- Header -->
+        <header class="gradient-bg text-white shadow-lg">
+            <div class="container mx-auto px-4 py-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-graduation-cap text-3xl"></i>
+                        <h1 class="text-2xl font-bold">StudyBuddy</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="theme-toggle" class="p-2 rounded-full hover:bg-indigo-700 transition">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <div class="relative">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile" class="w-10 h-10 rounded-full cursor-pointer border-2 border-white">
+                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Timer Section -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 card-hover">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800">Focus Timer</h2>
+                                <div class="flex space-x-2">
+                                    <button id="timer-preset-25" class="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded-full hover:bg-indigo-200">25:00</button>
+                                    <button id="timer-preset-50" class="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded-full hover:bg-indigo-200">50:00</button>
+                                    <button id="timer-preset-10" class="px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded-full hover:bg-indigo-200">10:00</button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-col items-center justify-center py-6">
+                                <div class="relative w-64 h-64 mb-6">
+                                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                                        <circle class="text-gray-200" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                                        <circle id="progress-ring" class="text-indigo-500 progress-ring__circle" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                        <div id="timer-display" class="text-4xl font-bold text-gray-800">25:00</div>
+                                        <div class="flex space-x-4 mt-4">
+                                            <button id="timer-start" class="px-6 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 focus:outline-none">
+                                                <i class="fas fa-play"></i> Start
+                                            </button>
+                                            <button id="timer-reset" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 focus:outline-none">
+                                                <i class="fas fa-redo"></i> Reset
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-gray-600">
+                                    <span id="timer-mode">Focus Time</span> • <span id="timer-sessions">0</span> sessions completed
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tasks Section -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 card-hover">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800">Today's Tasks</h2>
+                                <button id="clear-completed" class="text-sm text-indigo-600 hover:text-indigo-800">Clear completed</button>
+                            </div>
+                            
+                            <div class="flex mb-4">
+                                <input id="new-task-input" type="text" placeholder="Add a new task..." class="flex-grow px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <button id="add-task-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700 focus:outline-none">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            
+                            <div id="tasks-container" class="max-h-64 overflow-y-auto">
+                                <!-- Tasks will be added here dynamically -->
+                            </div>
+                            
+                            <div class="flex justify-between items-center mt-4 text-sm text-gray-500">
+                                <span id="tasks-count">0 tasks</span>
+                                <div class="flex space-x-2">
+                                    <button id="filter-all" class="px-2 py-1 rounded hover:bg-gray-100 active">All</button>
+                                    <button id="filter-active" class="px-2 py-1 rounded hover:bg-gray-100">Active</button>
+                                    <button id="filter-completed" class="px-2 py-1 rounded hover:bg-gray-100">Completed</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="space-y-8">
+                    <!-- Flashcards Section -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 card-hover">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800">Flashcards</h2>
+                                <button id="new-flashcard" class="px-3 py-1 text-sm bg-indigo-600 text-white rounded-full hover:bg-indigo-700">
+                                    <i class="fas fa-plus"></i> New
+                                </button>
+                            </div>
+                            
+                            <div id="flashcards-container" class="space-y-4">
+                                <!-- Flashcards will be added here dynamically -->
+                            </div>
+                            
+                            <div id="flashcard-controls" class="flex justify-between mt-6 hidden">
+                                <button id="prev-flashcard" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </button>
+                                <button id="next-flashcard" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 card-hover">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-800">Quick Notes</h2>
+                                <button id="save-note" class="px-3 py-1 text-sm bg-indigo-600 text-white rounded-full hover:bg-indigo-700">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                            </div>
+                            
+                            <textarea id="notes-textarea" class="w-full h-40 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Write your notes here..."></textarea>
+                            
+                            <div id="notes-saved" class="mt-2 text-sm text-green-600 hidden">
+                                <i class="fas fa-check-circle"></i> Note saved successfully!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Section -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 card-hover">
+                        <div class="p-6">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Today's Stats</h2>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-indigo-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-indigo-600">Focus Time</p>
+                                            <p class="text-2xl font-bold text-gray-800">1h 25m</p>
+                                        </div>
+                                        <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-green-600">Tasks Done</p>
+                                            <p class="text-2xl font-bold text-gray-800">7/10</p>
+                                        </div>
+                                        <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-purple-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-purple-600">Flashcards</p>
+                                            <p class="text-2xl font-bold text-gray-800">12</p>
+                                        </div>
+                                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                            <i class="fas fa-layer-group"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-blue-600">Study Streak</p>
+                                            <p class="text-2xl font-bold text-gray-800">5 days</p>
+                                        </div>
+                                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                            <i class="fas fa-fire"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-gray-200 py-6">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                        <i class="fas fa-graduation-cap text-indigo-600"></i>
+                        <span class="font-medium text-gray-700">StudyBuddy</span>
+                    </div>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-500 hover:text-indigo-600"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-indigo-600"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-indigo-600"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="mt-4 text-center md:text-left text-sm text-gray-500">
+                    © 2023 StudyBuddy. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Flashcard Modal -->
+    <div id="flashcard-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Create New Flashcard</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="flashcard-question" class="block text-sm font-medium text-gray-700 mb-1">Question</label>
+                        <input type="text" id="flashcard-question" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="flashcard-answer" class="block text-sm font-medium text-gray-700 mb-1">Answer</label>
+                        <textarea id="flashcard-answer" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button id="cancel-flashcard" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button id="save-flashcard" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                            Save Flashcard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const themeToggle = document.getElementById('theme-toggle');
+        const timerDisplay = document.getElementById('timer-display');
+        const timerStart = document.getElementById('timer-start');
+        const timerReset = document.getElementById('timer-reset');
+        const progressRing = document.getElementById('progress-ring');
+        const timerMode = document.getElementById('timer-mode');
+        const timerSessions = document.getElementById('timer-sessions');
+        const timerPreset25 = document.getElementById('timer-preset-25');
+        const timerPreset50 = document.getElementById('timer-preset-50');
+        const timerPreset10 = document.getElementById('timer-preset-10');
+        const newTaskInput = document.getElementById('new-task-input');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const tasksContainer = document.getElementById('tasks-container');
+        const tasksCount = document.getElementById('tasks-count');
+        const clearCompleted = document.getElementById('clear-completed');
+        const filterAll = document.getElementById('filter-all');
+        const filterActive = document.getElementById('filter-active');
+        const filterCompleted = document.getElementById('filter-completed');
+        const flashcardsContainer = document.getElementById('flashcards-container');
+        const newFlashcard = document.getElementById('new-flashcard');
+        const flashcardControls = document.getElementById('flashcard-controls');
+        const prevFlashcard = document.getElementById('prev-flashcard');
+        const nextFlashcard = document.getElementById('next-flashcard');
+        const notesTextarea = document.getElementById('notes-textarea');
+        const saveNote = document.getElementById('save-note');
+        const notesSaved = document.getElementById('notes-saved');
+        const flashcardModal = document.getElementById('flashcard-modal');
+        const cancelFlashcard = document.getElementById('cancel-flashcard');
+        const saveFlashcard = document.getElementById('save-flashcard');
+        const flashcardQuestion = document.getElementById('flashcard-question');
+        const flashcardAnswer = document.getElementById('flashcard-answer');
+
+        // Timer Variables
+        let timerInterval;
+        let totalSeconds = 25 * 60; // Default 25 minutes
+        let isRunning = false;
+        let sessionsCompleted = 0;
+        let isFocusTime = true;
+        const focusTime = 25 * 60; // 25 minutes
+        const shortBreak = 5 * 60; // 5 minutes
+        const longBreak = 15 * 60; // 15 minutes
+
+        // Tasks Variables
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let currentFilter = 'all';
+
+        // Flashcards Variables
+        let flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+        let currentFlashcardIndex = 0;
+
+        // Initialize the app
+        function init() {
+            updateTimerDisplay();
+            renderTasks();
+            renderFlashcards();
+            loadNotes();
+            setupEventListeners();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Timer controls
+            timerStart.addEventListener('click', toggleTimer);
+            timerReset.addEventListener('click', resetTimer);
+            timerPreset25.addEventListener('click', () => setTimerPreset(25));
+            timerPreset50.addEventListener('click', () => setTimerPreset(50));
+            timerPreset10.addEventListener('click', () => setTimerPreset(10));
+            
+            // Task controls
+            addTaskBtn.addEventListener('click', addTask);
+            newTaskInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addTask();
+            });
+            clearCompleted.addEventListener('click', clearCompletedTasks);
+            filterAll.addEventListener('click', () => setFilter('all'));
+            filterActive.addEventListener('click', () => setFilter('active'));
+            filterCompleted.addEventListener('click', () => setFilter('completed'));
+            
+            // Flashcard controls
+            newFlashcard.addEventListener('click', showFlashcardModal);
+            cancelFlashcard.addEventListener('click', hideFlashcardModal);
+            saveFlashcard.addEventListener('click', saveNewFlashcard);
+            prevFlashcard.addEventListener('click', showPrevFlashcard);
+            nextFlashcard.addEventListener('click', showNextFlashcard);
+            
+            // Notes controls
+            saveNote.addEventListener('click', saveNotes);
+        }
+
+        // Timer Functions
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerStart.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            if (isRunning) {
+                isRunning = false;
+                timerStart.innerHTML = '<i class="fas fa-play"></i> Resume';
+                clearInterval(timerInterval);
+            }
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            if (isFocusTime) {
+                totalSeconds = focusTime;
+            } else {
+                totalSeconds = sessionsCompleted % 4 === 0 ? longBreak : shortBreak;
+            }
+            updateTimerDisplay();
+        }
+
+        function updateTimer() {
+            if (totalSeconds <= 0) {
+                timerComplete();
+                return;
+            }
+            
+            totalSeconds--;
+            updateTimerDisplay();
+        }
+
+        function timerComplete() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            
+            // Play sound
+            const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
+            audio.play();
+            
+            if (isFocusTime) {
+                sessionsCompleted++;
+                timerSessions.textContent = sessionsCompleted;
+                
+                // Switch to break time
+                isFocusTime = false;
+                timerMode.textContent = sessionsCompleted % 4 === 0 ? 'Long Break' : 'Short Break';
+                totalSeconds = sessionsCompleted % 4 === 0 ? longBreak : shortBreak;
+            } else {
+                // Switch back to focus time
+                isFocusTime = true;
+                timerMode.textContent = 'Focus Time';
+                totalSeconds = focusTime;
+            }
+            
+            updateTimerDisplay();
+            timerStart.innerHTML = '<i class="fas fa-play"></i> Start';
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update progress ring
+            const circumference = 2 * Math.PI * 40;
+            const totalTime = isFocusTime ? focusTime : (sessionsCompleted % 4 === 0 ? longBreak : shortBreak);
+            const progress = ((totalTime - totalSeconds) / totalTime) * circumference;
+            document.querySelector('.progress-ring__circle').style.strokeDasharray = `${progress}, ${circumference}`;
+        }
+
+        function setTimerPreset(minutes) {
+            pauseTimer();
+            totalSeconds = minutes * 60;
+            isFocusTime = true;
+            timerMode.textContent = 'Focus Time';
+            updateTimerDisplay();
+        }
+
+        // Task Functions
+        function addTask() {
+            const taskText = newTaskInput.value.trim();
+            if (taskText) {
+                const newTask = {
+                    id: Date.now(),
+                    text: taskText,
+                    completed: false
+                };
+                tasks.push(newTask);
+                saveTasks();
+                newTaskInput.value = '';
+                renderTasks();
+            }
+        }
+
+        function toggleTaskComplete(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+        function deleteTask(taskId) {
+            tasks = tasks.filter(t => t.id !== taskId);
+            saveTasks();
+            renderTasks();
+        }
+
+        function clearCompletedTasks() {
+            tasks = tasks.filter(t => !t.completed);
+            saveTasks();
+            renderTasks();
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            
+            // Update active button
+            document.querySelectorAll('#filter-all, #filter-active, #filter-completed').forEach(btn => {
+                btn.classList.remove('bg-indigo-100', 'text-indigo-800');
+            });
+            
+            if (filter === 'all') {
+                filterAll.classList.add('bg-indigo-100', 'text-indigo-800');
+            } else if (filter === 'active') {
+                filterActive.classList.add('bg-indigo-100', 'text-indigo-800');
+            } else {
+                filterCompleted.classList.add('bg-indigo-100', 'text-indigo-800');
+            }
+            
+            renderTasks();
+        }
+
+        function renderTasks() {
+            let filteredTasks = tasks;
+            
+            if (currentFilter === 'active') {
+                filteredTasks = tasks.filter(t => !t.completed);
+            } else if (currentFilter === 'completed') {
+                filteredTasks = tasks.filter(t => t.completed);
+            }
+            
+            tasksContainer.innerHTML = '';
+            
+            if (filteredTasks.length === 0) {
+                tasksContainer.innerHTML = '<p class="text-center text-gray-500 py-4">No tasks found</p>';
+            } else {
+                filteredTasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.className = `flex items-center justify-between p-3 border-b border-gray-100 ${task.completed ? 'task-item completed' : 'task-item'}`;
+                    
+                    taskElement.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <button class="complete-btn p-1 rounded-full ${task.completed ? 'text-green-500' : 'text-gray-300 hover:text-gray-400'}">
+                                <i class="fas fa-check-circle text-xl"></i>
+                            </button>
+                            <span>${task.text}</span>
+                        </div>
+                        <button class="delete-btn p-1 text-gray-400 hover:text-red-500">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    
+                    taskElement.querySelector('.complete-btn').addEventListener('click', () => toggleTaskComplete(task.id));
+                    taskElement.querySelector('.delete-btn').addEventListener('click', () => deleteTask(task.id));
+                    
+                    tasksContainer.appendChild(taskElement);
+                });
+            }
+            
+            updateTaskCount();
+        }
+
+        function updateTaskCount() {
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(t => t.completed).length;
+            tasksCount.textContent = `${completedTasks}/${totalTasks} tasks`;
+        }
+
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Flashcard Functions
+        function showFlashcardModal() {
+            flashcardQuestion.value = '';
+            flashcardAnswer.value = '';
+            flashcardModal.classList.remove('hidden');
+        }
+
+        function hideFlashcardModal() {
+            flashcardModal.classList.add('hidden');
+        }
+
+        function saveNewFlashcard() {
+            const question = flashcardQuestion.value.trim();
+            const answer = flashcardAnswer.value.trim();
+            
+            if (question && answer) {
+                const newFlashcard = {
+                    id: Date.now(),
+                    question,
+                    answer
+                };
+                
+                flashcards.push(newFlashcard);
+                saveFlashcards();
+                hideFlashcardModal();
+                renderFlashcards();
+            }
+        }
+
+        function renderFlashcards() {
+            flashcardsContainer.innerHTML = '';
+            
+            if (flashcards.length === 0) {
+                flashcardsContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-layer-group text-4xl mb-3 text-indigo-200"></i>
+                        <p>No flashcards yet. Create your first one!</p>
+                    </div>
+                `;
+                flashcardControls.classList.add('hidden');
+            } else {
+                currentFlashcardIndex = 0;
+                showCurrentFlashcard();
+                
+                if (flashcards.length > 1) {
+                    flashcardControls.classList.remove('hidden');
+                } else {
+                    flashcardControls.classList.add('hidden');
+                }
+            }
+        }
+
+        function showCurrentFlashcard() {
+            flashcardsContainer.innerHTML = '';
+            
+            const flashcard = flashcards[currentFlashcardIndex];
+            
+            const flashcardElement = document.createElement('div');
+            flashcardElement.className = 'flashcard cursor-pointer';
+            flashcardElement.innerHTML = `
+                <div class="flashcard-inner">
+                    <div class="flashcard-front bg-indigo-600 text-white p-6 rounded-xl shadow-md h-48 flex items-center justify-center">
+                        <div class="text-center">
+                            <p class="text-sm text-indigo-200 mb-2">Question</p>
+                            <h3 class="text-xl font-semibold">${flashcard.question}</h3>
+                            <p class="text-sm text-indigo-200 mt-4">Click to reveal answer</p>
+                        </div>
+                    </div>
+                    <div class="flashcard-back bg-white border border-gray-200 p-6 rounded-xl shadow-md h-48 flex items-center justify-center">
+                        <div class="text-center">
+                            <p class="text-sm text-gray-500 mb-2">Answer</p>
+                            <h3 class="text-xl font-semibold text-gray-800">${flashcard.answer}</h3>
+                            <p class="text-sm text-gray-400 mt-4">Click to see question</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-2 text-sm text-gray-500">
+                    ${currentFlashcardIndex + 1} of ${flashcards.length}
+                </div>
+            `;
+            
+            flashcardElement.addEventListener('click', () => {
+                flashcardElement.classList.toggle('flipped');
+            });
+            
+            flashcardsContainer.appendChild(flashcardElement);
+        }
+
+        function showPrevFlashcard() {
+            if (currentFlashcardIndex > 0) {
+                currentFlashcardIndex--;
+                showCurrentFlashcard();
+            }
+        }
+
+        function showNextFlashcard() {
+            if (currentFlashcardIndex < flashcards.length - 1) {
+                currentFlashcardIndex++;
+                showCurrentFlashcard();
+            }
+        }
+
+        function saveFlashcards() {
+            localStorage.setItem('flashcards', JSON.stringify(flashcards));
+        }
+
+        // Notes Functions
+        function saveNotes() {
+            const notes = notesTextarea.value;
+            localStorage.setItem('notes', notes);
+            
+            notesSaved.classList.remove('hidden');
+            setTimeout(() => {
+                notesSaved.classList.add('hidden');
+            }, 2000);
+        }
+
+        function loadNotes() {
+            const savedNotes = localStorage.getItem('notes');
+            if (savedNotes) {
+                notesTextarea.value = savedNotes;
+            }
+        }
+
+        // Theme Functions
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function checkTheme() {
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+
+        // Initialize the app
+        checkTheme();
+        init();
+    </script>
+</body>
+</html>
