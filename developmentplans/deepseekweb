@@ -1,0 +1,99 @@
+# **LearnLoop Web App Development Plan (3-Month Agile Roadmap)**  
+
+Since you're considering a **website version** of LearnLoop alongside the mobile app, here’s a **parallel development plan** that ensures both platforms align while keeping the workload manageable in 3 months.  
+
+---
+
+## **Phase 1: Planning & Setup (Week 1-2)**  
+### **Sprint 0: Define Scope & Tech Stack**  
+- **Core Features (MVP for Web):**  
+  - User authentication  
+  - Flashcards & quizzes  
+  - Progress tracking  
+  - AI Tutor (basic Q&A)  
+  - Responsive design (works on desktop & mobile browsers)  
+- **Tech Stack:**  
+  - **Frontend:** React.js (or Next.js for better SEO & performance)  
+  - **Backend:** Firebase (Auth, DB) or Node.js + MongoDB  
+  - **AI:** OpenAI API (same as mobile)  
+  - **Hosting:** Vercel (Next.js) / Netlify (React)  
+
+---
+
+## **Phase 2: MVP Development (Weeks 3-10, 4 Sprints)**  
+### **Sprint 1: Auth + Basic Study Tools**  
+- **Features:**  
+  ✅ User login/signup (Firebase Auth)  
+  ✅ Flashcard system (create, flip, save)  
+  ✅ Simple quizzes (MCQ-based)  
+- **AI:** None yet (focus on core functionality).  
+
+### **Sprint 2: Study Tracking + UI Improvements**  
+- **Features:**  
+  ✅ Progress dashboard (streaks, mastery %)  
+  ✅ Dark/light mode toggle  
+  ✅ Basic note-taking (text only)  
+- **AI:**  
+  🔄 Smart reminders (spaced repetition logic).  
+
+### **Sprint 3: AI Tutor + Offline Support**  
+- **Features:**  
+  ✅ AI Tutor (OpenAI API integration)  
+  ✅ Export flashcards as PDF (offline study)  
+  ✅ Search & filter notes  
+- **AI:**  
+  🔄 Auto-generate quiz questions from notes.  
+
+### **Sprint 4: Polish & Beta Testing**  
+- **Features:**  
+  ✅ Study groups (basic chat via Firebase)  
+  ✅ Bug fixes & UI refinements  
+  ✅ Performance optimizations  
+- **AI:**  
+  🔄 Weak topic suggestions (based on quiz performance).  
+
+---
+
+## **Phase 3: Testing & Launch (Weeks 11-12)**  
+### **Sprint 5: User Testing & Feedback**  
+- Deploy beta version (Vercel/Netlify).  
+- Collect feedback via Google Forms / in-app surveys.  
+- Fix critical bugs.  
+
+### **Sprint 6: Final Launch & Future Roadmap**  
+- **Deploy production version** (custom domain setup).  
+- **Post-MVP Features:**  
+  - Voice notes (Web Speech API)  
+  - Mind maps (D3.js integration)  
+  - Advanced analytics (study heatmaps)  
+
+---
+
+## **Key Differences vs. Mobile App**  
+| Feature | Mobile App | Web App |  
+|---------|-----------|--------|  
+| **Offline Mode** | Full support (downloaded content) | Limited (PDF export, PWA possible) |  
+| **AI Tutor** | Same (OpenAI API) | Same (OpenAI API) |  
+| **Gamification** | Badges, streaks, leaderboards | Same, but less push notifications |  
+| **Study Groups** | Firebase chat | Firebase chat + desktop-friendly UI |  
+| **Deployment** | App Store / Play Store | Web hosting (Vercel/Netlify) |  
+
+---
+
+### **Agile Execution Tips for Both Platforms**  
+1. **Reuse Backend & AI Logic** (Firebase/Node.js + OpenAI works for both).  
+2. **Prioritize Mobile First?** If your audience is mostly mobile, build that first, then adapt UI for web.  
+3. **Responsive Design** (Use Tailwind CSS or Material-UI for consistency).  
+4. **Feature Parity Later** (Launch MVP on both, then expand).  
+
+---
+### **Final Deliverable (After 3 Months)**  
+✅ **LearnLoop Web MVP** with:  
+- User accounts  
+- Flashcards & quizzes  
+- AI Tutor (Q&A)  
+- Progress tracking  
+- Basic study groups  
+- Responsive design  
+
+Would you like a **detailed UI flow** or **backend API structure** for the web app? 🚀
